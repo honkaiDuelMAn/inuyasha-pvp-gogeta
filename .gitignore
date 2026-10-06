@@ -5,3 +5,5 @@ runtime/
 scratch/
 __pycache__/
 .superpowers/
+source/gogeta/previews/*.png
+source/gogeta/work/
