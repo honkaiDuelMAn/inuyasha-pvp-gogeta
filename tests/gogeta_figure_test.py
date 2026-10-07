@@ -96,8 +96,8 @@ class GogetaFigure(unittest.TestCase):
     def test_frame_manifest_uses_fusion_sources_and_custom_guard(self) -> None:
         data = json.loads(FRAMES.read_text(encoding="utf8"))
         self.assertEqual(data["palette"], "fusion-super-saiyan")
-        self.assertEqual(data["sources"]["jump"]["spriteId"], 6585)
-        self.assertEqual(data["sources"]["dragonFist"]["spriteId"], 6649)
+        self.assertEqual(data["sources"]["jump"]["spriteId"], 7042)
+        self.assertEqual(data["sources"]["dragonFist"]["spriteId"], 7117)
         guard_paths = [ROOT / path for path in data["generated"]["guard"]]
         self.assertEqual(len(guard_paths), 3)
         for path in guard_paths:
@@ -142,7 +142,7 @@ class GogetaFigure(unittest.TestCase):
             expected_size = (box[2] - box[0], box[3] - box[1])
             self.assertEqual(sequences[name][0].image.size, expected_size, f"{name} must not be enlarged")
         for name in ("idle", "guard", "defeat"):
-            self.assertLessEqual(max(frame.image.height for frame in sequences[name]), 90, name)
+            self.assertLessEqual(max(frame.image.height for frame in sequences[name]), 106, name)
 
     def test_figure_build_is_byte_deterministic_and_does_not_touch_source(self) -> None:
         from tools.gogeta_figure import build_figure

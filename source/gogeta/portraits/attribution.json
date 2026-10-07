@@ -1,7 +1,7 @@
 {
   "character": "오지터",
   "sourceType": "derived-user-provided-game-sprite",
-  "source": "D:\\CHAT\\manga rpg\\RPG.swf · Goku character ID 5 · fusion-palette animation bank",
+  "source": "D:\\CHAT\\manga rpg\\RPG.swf · character ID 5 · transformation 5 · standing sprite 7020",
   "replaceable": true,
-  "notes": "The checked-in portrait, versus and card sources are deterministic crops of the user-provided Manga RPG sprite. No unlicensed internet illustration is redistributed in this repository."
+  "notes": "Matched to the user's reference: golden hair, black vest with orange shoulders, blue sash and white trousers. Sprites 6564..6676 are orange Goku and excluded. Portrait/VS use 7020; four attacks use 7158/7117/7101/7109. Native card frame and glyphs are from the unchanged InuYasha artwork. No separately downloaded illustration is redistributed."
 }

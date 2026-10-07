@@ -237,22 +237,26 @@ def normalize_sequence(paths: list[Path]) -> list[RenderedFrame]:
     canvas_width, canvas_height = images[0].size
     if any(image.size != (canvas_width, canvas_height) for image in images):
         raise ValueError("animation source frames changed canvas size")
-    # Manga RPG already renders the fighter at a battle-appropriate native
-    # pixel size.  Only shrink frames which exceed this wrapper's stage;
-    # never enlarge small idle/jump/guard canvases, or the fighter becomes
-    # more than twice the height of the original InuYasha cast.
-    scale = min(1.0, 520 / canvas_width, 360 / canvas_height)
-    target = (max(1, round(canvas_width * scale)), max(1, round(canvas_height * scale)))
+    # ViewRoundPlayers attaches the figure at the cell's floor coordinate.
+    # Export canvas centers are unrelated to that anchor and used to offset
+    # the controlled fighter hundreds of pixels away from its actual cell.
+    first_box = images[0].getbbox()
+    if first_box is None:
+        raise ValueError('first animation frame has no fighter/effect anchor')
+    anchor_x = round((first_box[0]+first_box[2])/2)
+    anchor_y = first_box[3]
+    # Keep the fighter's native size. Crop oversized effects to a stable
+    # viewport around its origin instead of shrinking the whole character.
+    viewport = (max(0,anchor_x-260),max(0,anchor_y-300),
+                min(canvas_width,anchor_x+260),min(canvas_height,anchor_y+60))
     rendered: list[RenderedFrame] = []
-    origin_x = (STAGE_WIDTH - target[0]) // 2
-    origin_y = (STAGE_HEIGHT - target[1]) // 2
     for image in images:
-        scaled = image.resize(target, Image.Resampling.NEAREST)
-        box = scaled.getbbox()
+        cropped_view = image.crop(viewport)
+        box = cropped_view.getbbox()
         if not box:
             box = (0, 0, 1, 1)
-        cropped = scaled.crop(box)
-        rendered.append(RenderedFrame(cropped, origin_x + box[0], origin_y + box[1]))
+        cropped = cropped_view.crop(box)
+        rendered.append(RenderedFrame(cropped, viewport[0]+box[0]-anchor_x, viewport[1]+box[1]-anchor_y))
     return rendered
 
 
@@ -293,6 +297,7 @@ def segments(sequences: dict[str, list[RenderedFrame]]) -> list[tuple[str, list[
         ("heal", aura, "done"),
         ("energyUp", aura, "done"),
         ("summonShippo", aura, "hit-done"),
+        ("basicPunch", sequences["basicPunch"], "hit-done"),
         ("bigBangKamehameha", sequences["bigBangKamehameha"], "hit-done"),
         ("dragonFist", sequences["dragonFist"], "hit-done"),
         ("superEnergyBackflow", sequences["superEnergyBackflow"], "hit-done"),
@@ -313,8 +318,16 @@ def move_label(character_id: str, move_id: str) -> str:
 
 
 def build_figure(output: Path = DEFAULT_OUTPUT) -> None:
+    try:
+        from .gogeta_audio import DEFAULT_OUTPUT as AUDIO_DIR, definition_tag, start_sound_tag
+    except ImportError:
+        from gogeta_audio import DEFAULT_OUTPUT as AUDIO_DIR, definition_tag, start_sound_tag
     sequences = load_sequences()
     definitions = bytearray()
+    audio = json.loads((AUDIO_DIR / 'manifest.json').read_text(encoding='utf8'))
+    sound_ids = {row['soundId']: 50000+index for index,row in enumerate(audio['sounds'])}
+    for source_id,runtime_id in sound_ids.items():
+        definitions.extend(definition_tag(source_id,runtime_id))
     timeline = bytearray()
     next_id = 1
     depth = 1
@@ -334,6 +347,10 @@ def build_figure(output: Path = DEFAULT_OUTPUT) -> None:
                 timeline.extend(remove_object(depth))
             timeline.extend(place_object(shape_id, depth, rendered.x, rendered.y))
             first_frame = False
+            audio_id = 'kiRelease' if action_id in ('energyUp','heal','summonShippo') else action_id
+            for event in audio['moves'].get(audio_id,{}).get('events',[]):
+                if event['frame'] == index+1:
+                    timeline.extend(start_sound_tag(event,sound_ids[event['soundId']]))
             if behavior == "hit-done" and index == hit_index:
                 timeline.extend(event_action("hit"))
             if index == len(frames) - 1:
@@ -342,6 +359,9 @@ def build_figure(output: Path = DEFAULT_OUTPUT) -> None:
                 elif behavior == "stop":
                     timeline.extend(stop_action())
                 else:
+                    # Completion may be observational (no replacement attached).
+                    # Never fall through into the next move's timeline.
+                    timeline.extend(stop_action())
                     timeline.extend(event_action("done"))
             timeline.extend(tag(1))
             total_frames += 1
@@ -366,7 +386,10 @@ def build_figure(output: Path = DEFAULT_OUTPUT) -> None:
     root.extend(fx_top)
     root.extend(fx_bottom)
     root.extend(exports)
-    root.extend(place_object(moves_id, 1, 0, 0))
+    # BattleLoadManager loads a symbol library. Only ViewRoundPlayers may
+    # attach goMoves. A visible root instance bypasses its callbacks and keeps
+    # playing at a fixed map cell even after the real fighter moves away.
+    root.extend(stop_action())
     root.extend(tag(1))
     root.extend(tag(0))
 

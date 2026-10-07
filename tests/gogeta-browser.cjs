@@ -24,7 +24,7 @@ const {assertStunOnly} = require('./rtc-config.cjs');
     } catch { response.writeHead(404); response.end(); }
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  const url = `http://127.0.0.1:${server.address().port}/inuyasha-pvp-gogeta/`;
+  const url = process.env.LIVE_URL || `http://127.0.0.1:${server.address().port}/inuyasha-pvp-gogeta/`;
   const browser = await chromium.launch({executablePath: process.env.CHROME_PATH, headless: true, args:['--autoplay-policy=no-user-gesture-required']});
   const pages = [], errors = [], badRequests = [], cardAssetRequests = [], cardAssetResponses = [];
 
@@ -32,6 +32,17 @@ const {assertStunOnly} = require('./rtc-config.cjs');
     const page = await newPlayer(browser, 'about:blank');
     page.setDefaultTimeout(20000);
     await page.addInitScript(() => {
+      window.__gogetaAudio = [];
+      const start = AudioBufferSourceNode.prototype.start;
+      AudioBufferSourceNode.prototype.start = function(...args) {
+        if (this.buffer) {
+          const values = this.buffer.getChannelData(0);
+          let power = 0;
+          for (let index=0; index<values.length; index++) power += values[index]*values[index];
+          __gogetaAudio.push(Math.sqrt(power/values.length));
+        }
+        return start.apply(this,args);
+      };
       window.__rtcConfigs = [];
       const Native = RTCPeerConnection;
       window.RTCPeerConnection = class extends Native {
@@ -121,11 +132,7 @@ const {assertStunOnly} = require('./rtc-config.cjs');
     await host.waitForTimeout(1200); // allow the original help dialog to finish opening
     for (const page of pages) await gameClick(page,358,82); // close original help overlay
     await host.waitForTimeout(800);
-    assert.deepEqual(new Set(cardAssetRequests.map(value => value.split('/').at(-1))), new Set([
-      'bigBangKamehameha.png','dragonFist.png','superEnergyBackflow.png','superKamehameha.png',
-    ]));
-    assert.ok(cardAssetResponses.length >= 8, 'both peers must load all four card images');
-    assert.ok(cardAssetResponses.every(item => item.status === 200), JSON.stringify(cardAssetResponses));
+    assert.equal(cardAssetRequests.length,0,'cards must use embedded native bitmaps with no asynchronous PNG reload');
     fs.mkdirSync('scratch/gogeta-browser', {recursive:true});
     await host.locator('ruffle-player').screenshot({path:'scratch/gogeta-browser/cards.png'});
     const rounds = [
@@ -134,8 +141,10 @@ const {assertStunOnly} = require('./rtc-config.cjs');
       {id:'superEnergyBackflow', points:[[278,140],[92,140],[92,72]], energy:70},
       {id:'bigBangKamehameha', points:[[154,140],[92,140],[92,72]], energy:50},
     ];
+    const audioProof = [];
     for (let index=0; index<rounds.length; index++) {
       const round = index + 1, expected = rounds[index];
+      const beforeAudio = await host.evaluate(() => __gogetaAudio.length);
       for (const page of pages) await hand(page, expected.points);
       await Promise.all(pages.map(page => page.waitForFunction(
         roundNumber => __gameEvents.some(event => event[0] === 'resolved' && event[1].round === roundNumber),
@@ -149,8 +158,14 @@ const {assertStunOnly} = require('./rtc-config.cjs');
       assert.deepEqual(reports[0], reports[1], expected.id);
       assert.deepEqual(reports[0].players.map(player => player.energy), [expected.energy,expected.energy], expected.id);
       assert.equal(reports[0].result, 'none', `${expected.id} unexpectedly ended the mirror match`);
+      await host.waitForTimeout(1200);
+      await host.locator('ruffle-player').screenshot({path:`scratch/gogeta-browser/${expected.id}-battle.png`});
       await finishRound(pages, round);
+      const audio = await host.evaluate(offset => __gogetaAudio.slice(offset),beforeAudio);
+      assert.ok(audio.some(rms => rms > 0.005),`${expected.id}: actual browser audio output is silent`);
+      audioProof.push({id:expected.id,audibleChunks:audio.filter(rms=>rms>0.005).length,maxRms:Math.max(...audio)});
     }
+    fs.writeFileSync('scratch/gogeta-browser/audio-proof.json',JSON.stringify({url,skills:audioProof},null,2));
 
     await host.screenshot({path:'scratch/gogeta-browser/host.png', fullPage:true});
     assert.deepEqual(errors, []);

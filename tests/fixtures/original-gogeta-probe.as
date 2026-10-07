@@ -7,12 +7,22 @@ originalProbe.bounds = function(clip) {
 originalProbe.inspect = function() {
     var game = _level0.originalgame;
     var picker = game.viewPickMoves;
+    var characterButtons = [];
+    for (var characterId in game.viewPickCharacter._characterButtons) {
+        var characterButton = game.viewPickCharacter._characterButtons[characterId].main_mc;
+        var characterInfo = this.bounds(game.viewPickCharacter._characterButtons[characterId].portrait_mc);
+        characterInfo.press = characterButton.onPress != undefined;
+        characterInfo.id = characterId;
+        characterButtons.push(characterInfo);
+    }
     var slots = [];
     for (var row=0; row<picker._moveSelectorClips.length; row++) {
         for (var column=0; column<picker._moveSelectorClips[row].length; column++) {
             var clip = picker._moveSelectorClips[row][column];
             var info = this.bounds(clip);
             info.id = clip.moveId;
+            info.art = clip.gogetaArt_mc != undefined;
+            info.artWidth = clip.gogetaArt_mc._width;
             info.row = row;
             info.column = column;
             slots.push(info);
@@ -35,6 +45,7 @@ originalProbe.inspect = function() {
     var versus = game.viewVersus._display_mc;
     return {
         userStats:game.userStatsManager.getStats(),
+        characterButtons:characterButtons,
         roundsCount:game.gameManager._roundsCount,
         roundSummary:game.gameManager._roundSummary,
         players:players,

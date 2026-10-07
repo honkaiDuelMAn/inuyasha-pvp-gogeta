@@ -146,7 +146,8 @@ function compileProbe() {
     assert.ok(requests.some(value => value.endsWith('/game/original-gogeta-bridge.swf')));
     assert.ok(requests.some(value => value.endsWith('/game/characters/go_figure.swf')));
     for (const id of ['bigBangKamehameha','dragonFist','superEnergyBackflow','superKamehameha']) {
-      assert.ok(requests.some(value => value.endsWith(`/game/gogeta/cards/${id}.png`)), `missing card art request: ${id}`);
+      const slot = runtime.slots.find(item => item.id === id);
+      assert.ok(slot?.art && slot.artWidth === 62,`missing native embedded card: ${id}`);
     }
     assert.deepEqual(errors,[]);
     assert.deepEqual(badRequests,[]);

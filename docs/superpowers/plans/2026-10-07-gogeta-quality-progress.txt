@@ -1,0 +1,19 @@
+Plan: docs/superpowers/plans/2026-10-07-gogeta-quality.md
+Baseline: a2b6c4303c51a3d0805c8610da7cbd5803156f9d; gogeta remote pvp is the authorized release target.
+Authorization: the user's explicit request supplies appearance/card design, A/B/C verification and commit/push/deployment instructions. Execute without additional design/integration approval menus.
+Isolation: existing linked worktree D:/CHAT/inuyasha-pvp-gogeta, branch gogeta-design; no unrelated working changes at start.
+Task 1 complete: 1.mp4 all252 frames, 2.mp4 all409 frames decoded; CSV timestamps/contact sheets stored in this chat work/video-analysis. Confirmed source bank5 white-trouser fusion and wrong orange bank2 IDs.
+Task 2 complete: quality appearance/native panel/common art/root-library/anchor regressions RED to GREEN. Idle7020; basic7034; jump7042; ki7062; attacks7158/7117/7101/7109. All originals preserve hashes.
+Task 3 complete: same shared display hooks both bridges. Invalid go background/HUD/card labels replaced with valid native static display underneath correct embedded bitmaps. Inner picker scrolling is frozen for go and restored for original characters. No PNG reloading. Figure stops before done, no root placement, and has floor anchor.
+Audio: 8 original MP3 definitions and SOUNDINFO embedded at original source cue frames; isolated six action audio/one-shot checks passed. No dedicated voice linkage identified; no claim all source clips are speech-free and no unrelated voice substituted.
+Review: independent gpt-6.1-sol/xhigh, no Critical, 2 Important, no Minor. Both selected placeholder and card-reveal FX gaps verified by failing real browser regressions, then fixed. No additional reviewer requested.
+Verification before latest version bump: Node66/66, Python42/42; original AI round, four-skill mirror, stable picker/HUD/refresh, all12common cards, no unmanaged fighter, audible six isolated actions; Sango actual combat, native six-card row, bonus1/2, static WebRTC victory/rematch/disconnect/recovery, mobile links/QR and original browser room rules passed.
+Latest verification: version bump invalidated only prior pinned package1.3.2 expectation, changed to1.3.3; final suite rerun pending. Native8 character sweep initially guessed wrong screen coordinates; fixture now reads actual native buttons and rerun pending. Neither initial failure is reported as a pass.
+Release: uncommitted; do not commit/push until remaining local checks pass. After push, verify actual GitHub Actions success, public bytes with cache-busting per-file SHA-256, actual unmodified public original and mirror browser gameplay, screenshots and final user report.
+
+Final typography: native S had been misidentified as the Kikyo apostrophe; new failing glyph regression confirmed width2, extraction now prioritizes actual BLADES S glyph and respects the apostrophe. New Python43/43 and Node66/66 pass. Final quality browser rerun after glyph rebuild pending.
+
+Final native8 sweep: all i/ke/m/ka/sa/ko/s/n selected via actual portrait bounds, native cards without Gogeta overlay, actual AIround and nextpicker passed. VS entrance is awaited before fight click. Evidence scratch/eight-characters/results.json and quality-eight-characters-final.log.
+Final quality browser: original+mirror, all16cards, native selection placeholders, revealFX, fixedstage, 6 isolated audible oneshots all pass after final glyph rebuild.
+
+Pre-commit gate: fresh Python43/43 and Node66/66 pass, final quality browser and final original/mirror browser pass, all8 sweep passes, public-verification script also passed against unmodified local responses. git diff --check clean. Ready for authorized gogeta/pvp commit and deployment; actual public checks remain required.

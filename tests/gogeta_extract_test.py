@@ -30,6 +30,7 @@ class GogetaExtractionManifest(unittest.TestCase):
             "dragonFist",
             "superEnergyBackflow",
             "superKamehameha",
+            "basicPunch",
         }
         self.assertEqual(set(data["animations"]), required)
         definitions = {entry["id"]: entry for entry in data["definitions"]}

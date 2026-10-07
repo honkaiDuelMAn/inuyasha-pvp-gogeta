@@ -1,4 +1,4 @@
-오지터 확장판 웹 버전 1.3.2: public/direct.html / GitHub Pages
+오지터 확장판 웹 버전 1.3.3: public/direct.html / GitHub Pages
 확장판 주소: https://honkaiDuelMAn.github.io/inuyasha-pvp-gogeta/
 세 번째 줄 왼쪽 오지터 슬롯, 기본 공격 4장, 싯포 전용카드와 오지터 미러 매치를 추가했습니다.
 상단 '원본 게임' 싱글플레이에서도 오지터를 선택할 수 있고 산고 수정 수치가 유지됩니다.

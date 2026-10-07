@@ -45,11 +45,11 @@ class GogetaPackage(unittest.TestCase):
             hashes = json.loads((output / "web-hashes.json").read_text(encoding="utf8"))
             self.assertIn("game/original-gogeta-bridge.swf", hashes)
             readme = (output / "README.md").read_text(encoding="utf8")
-            self.assertIn("웹 1.3.2", readme)
+            self.assertIn("웹 1.3.3", readme)
             self.assertIn("원본 게임에서도 오지터", readme)
             self.assertIn("Secret Sword", readme)
             package = json.loads((ROOT / "package.json").read_text(encoding="utf8"))
-            self.assertEqual(package["version"], "1.3.2")
+            self.assertEqual(package["version"], "1.3.3")
 
 
 if __name__ == "__main__":

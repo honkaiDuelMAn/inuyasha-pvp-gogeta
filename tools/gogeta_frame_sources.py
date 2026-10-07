@@ -14,17 +14,18 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "source" / "gogeta" / "frames"
 
 SELECTIONS = {
-    "idle": (6564, [1, 3, 5, 7, 9, 11, 12]),
-    "entrance": (6571, [1, 3, 5, 7, 9, 11]),
-    "jump": (6585, [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 20]),
-    "aura": (6609, [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 33]),
-    "hit": (6585, [1, 5, 10, 15, 20]),
-    "defeat": (6571, [11, 9, 7, 5, 3, 1]),
-    "victory": (6676, [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 64]),
-    "bigBangKamehameha": (6667, [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 51]),
-    "dragonFist": (6649, [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77]),
-    "superEnergyBackflow": (6609, [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 33]),
-    "superKamehameha": (6597, [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 24]),
+    "idle": (7020, list(range(1, 21))),
+    "entrance": (7020, [1, 4, 7, 10, 13, 16, 20]),
+    "jump": (7042, list(range(1, 11))),
+    "aura": (7062, list(range(1, 11))),
+    "hit": (7027, [1, 3, 5, 7, 9, 12]),
+    "defeat": (7027, [1, 3, 5, 7, 9, 12]),
+    "victory": (7062, list(range(1, 11))),
+    "basicPunch": (7034, list(range(1, 14))),
+    "bigBangKamehameha": (7158, list(range(1, 88))),
+    "dragonFist": (7117, list(range(1, 51))),
+    "superEnergyBackflow": (7101, list(range(1, 28))),
+    "superKamehameha": (7109, list(range(1, 58))),
 }
 
 
@@ -43,8 +44,8 @@ def edit_guard(source: Path, destination: Path, phase: int) -> None:
     skin = max(2, round(width * 0.06))
     # Blue sleeves lead into two crossed forearms and visible hands. The small
     # edit deliberately stays inside the source sprite's original silhouette.
-    draw.line((left + round(width * 0.25), shoulder_y, center_x - 2, hand_y), fill=(35, 72, 205, 255), width=sleeve)
-    draw.line((right - round(width * 0.25), shoulder_y, center_x + 2, hand_y), fill=(35, 72, 205, 255), width=sleeve)
+    draw.line((left + round(width * 0.25), shoulder_y, center_x - 2, hand_y), fill=(28, 21, 18, 255), width=sleeve)
+    draw.line((right - round(width * 0.25), shoulder_y, center_x + 2, hand_y), fill=(28, 21, 18, 255), width=sleeve)
     draw.line((center_x - round(width * 0.18), hand_y - 2, center_x + round(width * 0.17), hand_y + 3), fill=(241, 181, 124, 255), width=skin)
     draw.line((center_x + round(width * 0.18), hand_y - 2, center_x - round(width * 0.17), hand_y + 3), fill=(241, 181, 124, 255), width=skin)
     destination.parent.mkdir(parents=True, exist_ok=True)

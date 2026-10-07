@@ -17,28 +17,28 @@ else:  # Support `python tools/gogeta_extract.py ...` from the repository root.
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Character 5 is Goku. The game's 11-frame character shell places Goku's
-# timeline on selector frame 4. The second compact animation bank uses the
-# Super Saiyan/fusion palette requested by the user (yellow hair, orange/blue
-# clothing) and is therefore the source for the playable Gogeta figure.
+# Character 5 owns several transformations. Only transformation 5 has the
+# user's fusion vest, blue sash and white trousers. The second bank is orange
+# Goku and must never be used for Gogeta, regardless of its yellow hair.
 CHARACTER_ID = 5
 SELECTOR_SPRITE_ID = 8503
 SELECTOR_FRAME = 4
 CHARACTER_TIMELINE_ID = 7169
 
 ANIMATION_SOURCES = {
-    "idle": 6564,
-    "entrance": 6571,
-    "jump": 6585,
-    "aura": 6609,
-    "guardBase": 6564,
-    "hit": 6585,
-    "defeat": 6571,
-    "victory": 6676,
-    "bigBangKamehameha": 6667,
-    "dragonFist": 6649,
-    "superEnergyBackflow": 6609,
-    "superKamehameha": 6597,
+    "idle": 7020,
+    "entrance": 7020,
+    "jump": 7042,
+    "aura": 7062,
+    "guardBase": 7020,
+    "hit": 7027,
+    "defeat": 7027,
+    "victory": 7062,
+    "basicPunch": 7034,
+    "bigBangKamehameha": 7158,
+    "dragonFist": 7117,
+    "superEnergyBackflow": 7101,
+    "superKamehameha": 7109,
 }
 
 
@@ -66,7 +66,7 @@ def extract_manifest(source: Path) -> dict[str, object]:
         raise ValueError("Goku selector frame no longer points to the approved character timeline")
 
     timeline = sprite_placements(definitions[CHARACTER_TIMELINE_ID])
-    timeline_ids = {p.character_id for p in timeline if p.name == "crt"}
+    timeline_ids = {p.character_id for p in timeline}
     missing = set(ANIMATION_SOURCES.values()) - timeline_ids
     if missing:
         raise ValueError(f"Goku timeline no longer places approved animation sprites: {sorted(missing)}")
@@ -104,6 +104,8 @@ def extract_manifest(source: Path) -> dict[str, object]:
         "selectorFrame": SELECTOR_FRAME,
         "characterTimelineId": CHARACTER_TIMELINE_ID,
         "palette": "fusion-super-saiyan",
+        "transformation": 5,
+        "appearance": "gold hair, black fusion vest, orange shoulders, blue sash, white trousers",
         "definitions": definition_rows,
         "animations": animations,
     }
