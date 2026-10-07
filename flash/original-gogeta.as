@@ -107,11 +107,19 @@ b.install = function() {
             versusView.originalGogetaRedraw = versusView._redraw;
             versusView._redraw = function(args) {
                 if (args.playerA == "go") {
-                    return this.originalGogetaRedraw.call(this,{
+                    var gogetaResult = this.originalGogetaRedraw.call(this,{
                         playerA:"i",playerB:args.playerB,enemies:args.enemies,userChoice:args.userChoice
                     });
+                    if (this._display_mc.giantA_mc != undefined) { this._display_mc.giantA_mc._visible = false; }
+                    if (this._display_mc.kanjiA_mc != undefined) { this._display_mc.kanjiA_mc._visible = false; }
+                    if (this._display_mc.portraitA_mc != undefined) { this._display_mc.portraitA_mc._visible = false; }
+                    return gogetaResult;
                 }
-                return this.originalGogetaRedraw.call(this,args);
+                var originalResult = this.originalGogetaRedraw.call(this,args);
+                if (this._display_mc.giantA_mc != undefined) { this._display_mc.giantA_mc._visible = true; }
+                if (this._display_mc.kanjiA_mc != undefined) { this._display_mc.kanjiA_mc._visible = true; }
+                if (this._display_mc.portraitA_mc != undefined) { this._display_mc.portraitA_mc._visible = true; }
+                return originalResult;
             };
         }
 

@@ -64,6 +64,8 @@ class OriginalGogetaBuild(unittest.TestCase):
         self.assertRegex(compact, r'addGogetaMove\("superKamehameha","[^"]+",-20,-35')
         self.assertIn("originalGogetaRedraw", source)
         self.assertIn('playerA:"i"', compact)
+        self.assertIn("giantA_mc._visible=false", compact)
+        self.assertIn("portraitA_mc._visible=false", compact)
 
     def test_original_main_has_one_original_loader_and_pvp_has_one_pvp_loader(self) -> None:
         original = [raw for frame, raw in frame_actions(ORIGINAL) if frame == 16 and b"original-gogeta-bridge.swf" in raw]

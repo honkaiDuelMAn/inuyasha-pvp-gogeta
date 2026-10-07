@@ -237,9 +237,11 @@ def normalize_sequence(paths: list[Path]) -> list[RenderedFrame]:
     canvas_width, canvas_height = images[0].size
     if any(image.size != (canvas_width, canvas_height) for image in images):
         raise ValueError("animation source frames changed canvas size")
-    scale = min(520 / canvas_width, 360 / canvas_height)
-    if max(canvas_width, canvas_height) < 220:
-        scale = min(scale, 2.2)
+    # Manga RPG already renders the fighter at a battle-appropriate native
+    # pixel size.  Only shrink frames which exceed this wrapper's stage;
+    # never enlarge small idle/jump/guard canvases, or the fighter becomes
+    # more than twice the height of the original InuYasha cast.
+    scale = min(1.0, 520 / canvas_width, 360 / canvas_height)
     target = (max(1, round(canvas_width * scale)), max(1, round(canvas_height * scale)))
     rendered: list[RenderedFrame] = []
     origin_x = (STAGE_WIDTH - target[0]) // 2

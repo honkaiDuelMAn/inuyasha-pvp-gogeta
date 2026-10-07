@@ -130,6 +130,20 @@ class GogetaFigure(unittest.TestCase):
         self.assertIs(mapped["bigBangKamehameha"], sequences["bigBangKamehameha"])
         self.assertIsNot(mapped["bigBangKamehameha"], sequences["jump"])
 
+    def test_base_body_sequences_keep_manga_rpg_native_character_scale(self) -> None:
+        from tools.gogeta_figure import load_sequences
+
+        sequences = load_sequences()
+        manifest = json.loads(FRAMES.read_text(encoding="utf8"))
+        for name in ("idle", "jump", "guard", "hit", "defeat"):
+            source = Image.open(ROOT / manifest["generated"][name][0]).convert("RGBA")
+            box = source.getbbox()
+            self.assertIsNotNone(box, name)
+            expected_size = (box[2] - box[0], box[3] - box[1])
+            self.assertEqual(sequences[name][0].image.size, expected_size, f"{name} must not be enlarged")
+        for name in ("idle", "guard", "defeat"):
+            self.assertLessEqual(max(frame.image.height for frame in sequences[name]), 90, name)
+
     def test_figure_build_is_byte_deterministic_and_does_not_touch_source(self) -> None:
         from tools.gogeta_figure import build_figure
 

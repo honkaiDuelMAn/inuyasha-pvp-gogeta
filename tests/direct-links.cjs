@@ -19,7 +19,7 @@ const {assertStunOnly}=require('./rtc-config.cjs');
       p.on('request',r=>{if(new URL(r.url()).origin!==new URL(url).origin||r.url().includes('IY2-')||/\/api\/|\/pvp$/.test(r.url()))badRequests.push(r.url());});
       p.on('pageerror',e=>errors.push(e.message));await p.goto(href);return p;
     }
-    function decodeQR(file){return execFileSync('python',['-c',"import cv2,sys\nimage=cv2.imread(sys.argv[1]); text=''\nfor scale in [1,2,3]:\n text,_,_=cv2.QRCodeDetector().detectAndDecode(cv2.resize(image,None,fx=scale,fy=scale,interpolation=cv2.INTER_NEAREST))\n if text:break\nassert text,'QR cannot be decoded'\nprint(text,end='')",file],{encoding:'utf8'});}
+    function decodeQR(file){return execFileSync('python',['-c',"import cv2,sys\nimage=cv2.imread(sys.argv[1]); image=cv2.copyMakeBorder(image,64,64,64,64,cv2.BORDER_CONSTANT,value=(255,255,255)); text=''\nfor scale in [1,2,3,4,6,8]:\n text,_,_=cv2.QRCodeDetector().detectAndDecode(cv2.resize(image,None,fx=scale,fy=scale,interpolation=cv2.INTER_NEAREST))\n if text:break\nassert text,'QR cannot be decoded'\nprint(text,end='')",file],{encoding:'utf8'});}
     const host=await player(url);await host.locator('#create').click();
     await host.waitForFunction(()=>document.querySelector('#outputCode').value.startsWith('IY2-'));
     const offer=await host.locator('#outputCode').inputValue();
