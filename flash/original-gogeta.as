@@ -1,4 +1,4 @@
-﻿stop();
+stop();
 var gameRoot = _level0;
 var g = gameRoot.originalgame;
 var b = gameRoot.originalGogetaBridge = {installed:false};
@@ -100,6 +100,19 @@ b.install = function() {
         g.userStatsManager._enemyLevelKey.go = ["sa","ko","ka","s","n"];
         if (g.viewRoundPlayers != undefined && g.viewRoundPlayers._characterIdToLinkageIdKey != undefined) {
             g.viewRoundPlayers._characterIdToLinkageIdKey.go = {figure:"goMoves",fxTop:"goFxTop",fxBottom:"goFxBottom"};
+        }
+
+        var versusView = g.viewVersus;
+        if (versusView != undefined && versusView.originalGogetaRedraw == undefined) {
+            versusView.originalGogetaRedraw = versusView._redraw;
+            versusView._redraw = function(args) {
+                if (args.playerA == "go") {
+                    return this.originalGogetaRedraw.call(this,{
+                        playerA:"i",playerB:args.playerB,enemies:args.enemies,userChoice:args.userChoice
+                    });
+                }
+                return this.originalGogetaRedraw.call(this,args);
+            };
         }
 
         var picker = g.viewPickMoves;

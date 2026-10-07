@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -27,11 +28,28 @@ class GogetaPackage(unittest.TestCase):
         required = [
             ROOT / "public" / "game" / "characters" / "go_figure.swf",
             ROOT / "public" / "game" / "pvp-bridge.swf",
+            ROOT / "public" / "game" / "original-gogeta-bridge.swf",
             ROOT / "public" / "game" / "gogeta" / "portrait.png",
             ROOT / "public" / "game" / "gogeta" / "versus.png",
         ]
         for path in required:
             self.assertTrue(path.is_file() and path.stat().st_size > 0, path)
+
+    def test_pages_stage_contains_original_mode_release_and_documentation(self) -> None:
+        from tools.pages import stage
+
+        with tempfile.TemporaryDirectory(prefix="gogeta_pages_") as temp:
+            output = Path(temp)
+            stage(output)
+            self.assertTrue((output / "game" / "original-gogeta-bridge.swf").is_file())
+            hashes = json.loads((output / "web-hashes.json").read_text(encoding="utf8"))
+            self.assertIn("game/original-gogeta-bridge.swf", hashes)
+            readme = (output / "README.md").read_text(encoding="utf8")
+            self.assertIn("웹 1.3.1", readme)
+            self.assertIn("원본 게임에서도 오지터", readme)
+            self.assertIn("Secret Sword", readme)
+            package = json.loads((ROOT / "package.json").read_text(encoding="utf8"))
+            self.assertEqual(package["version"], "1.3.1")
 
 
 if __name__ == "__main__":

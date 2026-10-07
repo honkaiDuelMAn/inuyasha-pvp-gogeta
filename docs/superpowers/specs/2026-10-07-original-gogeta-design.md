@@ -1,4 +1,4 @@
-﻿# Original-mode Gogeta and Sango parity
+# Original-mode Gogeta and Sango parity
 
 ## Goal
 

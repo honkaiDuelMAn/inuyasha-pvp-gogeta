@@ -1,6 +1,7 @@
-오지터 확장판 웹 버전 1.3.0: public/direct.html / GitHub Pages
+오지터 확장판 웹 버전 1.3.1: public/direct.html / GitHub Pages
 확장판 주소: https://honkaiDuelMAn.github.io/inuyasha-pvp-gogeta/
 세 번째 줄 왼쪽 오지터 슬롯, 기본 공격 4장, 싯포 전용카드와 오지터 미러 매치를 추가했습니다.
+상단 '원본 게임' 싱글플레이에서도 오지터를 선택할 수 있고 산고 수정 수치가 유지됩니다.
 기존 초대 링크·응답 링크 교환과 QR, 브라우저 직접 연결 방식을 유지합니다.
 공개 STUN으로 원격 직접 연결을 시도합니다. 모바일에서는 srflx 후보가 안정되면 ICE complete를 기다리지 않고 링크를 만들며 일부 NAT/방화벽에서는 실패할 수 있습니다. 자세한 안내: README.md
 아래는 기존 Windows 호스트 프로그램 방식입니다.
@@ -57,11 +58,13 @@ Poison Powder 카드 EN 20 표기, 공통카드 0~5장·밴·전용카드 ON/OFF
   원본의 AI 난이도가 대전에 영향을 주지 않습니다.
 
 원본 보존
-- '원본 게임' 버튼으로 싱글플레이를 실행합니다. 요청한 산고 수정도 적용됩니다.
+- '원본 게임' 버튼으로 싱글플레이를 실행합니다. 요청한 산고 수정과 오지터가 모두 적용됩니다.
+- PLAY → NORMAL/HARD → 캐릭터 선택 화면에서 세 번째 줄 왼쪽 오지터를 누릅니다.
+- 오지터의 원본 싱글플레이 상대 순서는 산고/코우가/카구라/셋쇼마루/나락입니다.
 - 기존 그림, 소리, 카드, 캐릭터, 전투 판정과 애니메이션을 재사용합니다.
-- 원본 게임 SWF 1,459개 태그 중 산고 데이터 1개와 카드 숫자 그림 2개만 수정했습니다.
-  나머지 1,456개 태그는 바이트 단위로 유지합니다. PvP용 파일은 연결 태그 한 개를
-  추가하고 별도 모듈을 불러옵니다. 링크 교환 통신 코드와는 별개입니다.
+- 원본 게임 기준 태그 1,459개 중 산고 데이터 1개와 카드 숫자 그림 2개만 수정했습니다.
+  나머지 1,456개 기준 태그를 유지하고, 웹 원본 모드에는 조건부 로더 태그 1개만
+  추가해 original-gogeta-bridge.swf를 불러옵니다. 링크 교환 통신 코드와는 별개입니다.
 - 캐릭터/소환수 SWF 11개는 원본 SHA-256과 일치합니다.
 - Flash 실행은 함께 포함한 Ruffle을 이용합니다. Flash 플러그인이나 Node 설치는 필요 없습니다.
   에뮬레이터와 예전 Flash Player 사이의 모든 세부 동작이 동일하다고 보장하지는 않습니다.
@@ -69,7 +72,7 @@ Poison Powder 카드 EN 20 표기, 공통카드 0~5장·밴·전용카드 ON/OFF
   창 오른쪽 위 X로 닫고 진행하세요. PvP 조작 안내는 이 문서와 바깥 게임 화면에 있습니다.
 
 파일과 개발
-- public/game: 원본, PvP SWF, 캐릭터 리소스
+- public/game: 원본, PvP SWF, PvP/원본 오지터 브리지, 캐릭터 리소스
 - public/ruffle: Ruffle 0.6.0 로컬 실행 파일과 라이선스
 - server: 방/동기화 서버, 원본 카드 정의
 - flash: 추가한 연결 코드 원본
@@ -77,7 +80,7 @@ Poison Powder 카드 EN 20 표기, 공통카드 0~5장·밴·전용카드 ON/OFF
 - node_modules/ws: WebSocket 라이브러리 8.22.0과 라이선스
 - tests: 방 규칙, HTTP/WebSocket, 원본 보존, 실제 브라우저 대전 검증
 - tools/build.py: JPEXS로 추가 모듈을 빌드하는 스크립트
-- tools/build_gogeta.py: 오지터 도트·그림·카탈로그·PvP 브리지를 재생성하는 스크립트
+- tools/build_gogeta.py: 오지터 도트·그림·카탈로그·PvP/원본 브리지를 재생성하는 스크립트
 
 검증 명령 (개발자용)
 runtime\node.exe --test tests/*.test.mjs
@@ -87,6 +90,7 @@ python -m unittest discover -s tests -p "*_test.py"
   node tests/bonus-browser.cjs
   node tests/card-settings-browser.cjs
   node tests/sango-browser.cjs
+  node tests/original-gogeta-browser.cjs
   카드/산고 검사는 자체 임시 서버를 사용합니다. JAVA_PATH, FFDEC_PATH도 지정하세요.
   DIRECT_GAMEPLAY=1이면 같은 검사를 초대/응답 링크 교환으로 실행합니다.
   DIRECT_URL로 공개 페이지에서도 검증할 수 있습니다.

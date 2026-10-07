@@ -1,4 +1,4 @@
-﻿var originalProbe = {};
+var originalProbe = {};
 originalProbe.bounds = function(clip) {
     if (clip == undefined) { return null; }
     var rect = clip.getBounds(_level0);
