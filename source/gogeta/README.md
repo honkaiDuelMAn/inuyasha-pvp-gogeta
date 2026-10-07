@@ -9,3 +9,11 @@ python tools/gogeta_inputs.py --manga-rpg "D:\CHAT\manga rpg\RPG.swf"
 ```
 
 Generated preview sheets stay under `source/gogeta/previews/` and are ignored except for documentation. Final normalized artwork and the extraction manifest are checked in so the shipped build can be reproduced without editor state.
+
+Rebuild all shipped Gogeta assets after Java and JPEXS FFDec are installed:
+
+```powershell
+python tools/build_gogeta.py --java "C:\path\java.exe" --ffdec "C:\path\ffdec.jar"
+```
+
+The public portrait and versus art are replacement-ready pixel compositions derived from the pinned Manga RPG sprite. No separately downloaded internet illustration is included.

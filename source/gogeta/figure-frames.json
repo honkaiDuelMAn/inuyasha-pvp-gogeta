@@ -1,0 +1,332 @@
+{
+  "schema": 1,
+  "palette": "fusion-super-saiyan",
+  "sources": {
+    "idle": {
+      "spriteId": 6564,
+      "frames": [
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        12
+      ]
+    },
+    "entrance": {
+      "spriteId": 6571,
+      "frames": [
+        1,
+        3,
+        5,
+        7,
+        9,
+        11
+      ]
+    },
+    "jump": {
+      "spriteId": 6585,
+      "frames": [
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        20
+      ]
+    },
+    "aura": {
+      "spriteId": 6609,
+      "frames": [
+        1,
+        4,
+        7,
+        10,
+        13,
+        16,
+        19,
+        22,
+        25,
+        28,
+        31,
+        33
+      ]
+    },
+    "hit": {
+      "spriteId": 6585,
+      "frames": [
+        1,
+        5,
+        10,
+        15,
+        20
+      ]
+    },
+    "defeat": {
+      "spriteId": 6571,
+      "frames": [
+        11,
+        9,
+        7,
+        5,
+        3,
+        1
+      ]
+    },
+    "victory": {
+      "spriteId": 6676,
+      "frames": [
+        1,
+        6,
+        12,
+        18,
+        24,
+        30,
+        36,
+        42,
+        48,
+        54,
+        60,
+        64
+      ]
+    },
+    "bigBangKamehameha": {
+      "spriteId": 6667,
+      "frames": [
+        1,
+        4,
+        7,
+        10,
+        13,
+        16,
+        19,
+        22,
+        25,
+        28,
+        31,
+        34,
+        37,
+        40,
+        43,
+        46,
+        49,
+        51
+      ]
+    },
+    "dragonFist": {
+      "spriteId": 6649,
+      "frames": [
+        1,
+        5,
+        9,
+        13,
+        17,
+        21,
+        25,
+        29,
+        33,
+        37,
+        41,
+        45,
+        49,
+        53,
+        57,
+        61,
+        65,
+        69,
+        73,
+        77
+      ]
+    },
+    "superEnergyBackflow": {
+      "spriteId": 6609,
+      "frames": [
+        1,
+        4,
+        7,
+        10,
+        13,
+        16,
+        19,
+        22,
+        25,
+        28,
+        31,
+        33
+      ]
+    },
+    "superKamehameha": {
+      "spriteId": 6597,
+      "frames": [
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15,
+        17,
+        19,
+        21,
+        24
+      ]
+    }
+  },
+  "generated": {
+    "idle": [
+      "source/gogeta/frames/idle/01.png",
+      "source/gogeta/frames/idle/02.png",
+      "source/gogeta/frames/idle/03.png",
+      "source/gogeta/frames/idle/04.png",
+      "source/gogeta/frames/idle/05.png",
+      "source/gogeta/frames/idle/06.png",
+      "source/gogeta/frames/idle/07.png"
+    ],
+    "entrance": [
+      "source/gogeta/frames/entrance/01.png",
+      "source/gogeta/frames/entrance/02.png",
+      "source/gogeta/frames/entrance/03.png",
+      "source/gogeta/frames/entrance/04.png",
+      "source/gogeta/frames/entrance/05.png",
+      "source/gogeta/frames/entrance/06.png"
+    ],
+    "jump": [
+      "source/gogeta/frames/jump/01.png",
+      "source/gogeta/frames/jump/02.png",
+      "source/gogeta/frames/jump/03.png",
+      "source/gogeta/frames/jump/04.png",
+      "source/gogeta/frames/jump/05.png",
+      "source/gogeta/frames/jump/06.png",
+      "source/gogeta/frames/jump/07.png",
+      "source/gogeta/frames/jump/08.png",
+      "source/gogeta/frames/jump/09.png",
+      "source/gogeta/frames/jump/10.png",
+      "source/gogeta/frames/jump/11.png"
+    ],
+    "aura": [
+      "source/gogeta/frames/aura/01.png",
+      "source/gogeta/frames/aura/02.png",
+      "source/gogeta/frames/aura/03.png",
+      "source/gogeta/frames/aura/04.png",
+      "source/gogeta/frames/aura/05.png",
+      "source/gogeta/frames/aura/06.png",
+      "source/gogeta/frames/aura/07.png",
+      "source/gogeta/frames/aura/08.png",
+      "source/gogeta/frames/aura/09.png",
+      "source/gogeta/frames/aura/10.png",
+      "source/gogeta/frames/aura/11.png",
+      "source/gogeta/frames/aura/12.png"
+    ],
+    "hit": [
+      "source/gogeta/frames/hit/01.png",
+      "source/gogeta/frames/hit/02.png",
+      "source/gogeta/frames/hit/03.png",
+      "source/gogeta/frames/hit/04.png",
+      "source/gogeta/frames/hit/05.png"
+    ],
+    "defeat": [
+      "source/gogeta/frames/defeat/01.png",
+      "source/gogeta/frames/defeat/02.png",
+      "source/gogeta/frames/defeat/03.png",
+      "source/gogeta/frames/defeat/04.png",
+      "source/gogeta/frames/defeat/05.png",
+      "source/gogeta/frames/defeat/06.png"
+    ],
+    "victory": [
+      "source/gogeta/frames/victory/01.png",
+      "source/gogeta/frames/victory/02.png",
+      "source/gogeta/frames/victory/03.png",
+      "source/gogeta/frames/victory/04.png",
+      "source/gogeta/frames/victory/05.png",
+      "source/gogeta/frames/victory/06.png",
+      "source/gogeta/frames/victory/07.png",
+      "source/gogeta/frames/victory/08.png",
+      "source/gogeta/frames/victory/09.png",
+      "source/gogeta/frames/victory/10.png",
+      "source/gogeta/frames/victory/11.png",
+      "source/gogeta/frames/victory/12.png"
+    ],
+    "bigBangKamehameha": [
+      "source/gogeta/frames/bigBangKamehameha/01.png",
+      "source/gogeta/frames/bigBangKamehameha/02.png",
+      "source/gogeta/frames/bigBangKamehameha/03.png",
+      "source/gogeta/frames/bigBangKamehameha/04.png",
+      "source/gogeta/frames/bigBangKamehameha/05.png",
+      "source/gogeta/frames/bigBangKamehameha/06.png",
+      "source/gogeta/frames/bigBangKamehameha/07.png",
+      "source/gogeta/frames/bigBangKamehameha/08.png",
+      "source/gogeta/frames/bigBangKamehameha/09.png",
+      "source/gogeta/frames/bigBangKamehameha/10.png",
+      "source/gogeta/frames/bigBangKamehameha/11.png",
+      "source/gogeta/frames/bigBangKamehameha/12.png",
+      "source/gogeta/frames/bigBangKamehameha/13.png",
+      "source/gogeta/frames/bigBangKamehameha/14.png",
+      "source/gogeta/frames/bigBangKamehameha/15.png",
+      "source/gogeta/frames/bigBangKamehameha/16.png",
+      "source/gogeta/frames/bigBangKamehameha/17.png",
+      "source/gogeta/frames/bigBangKamehameha/18.png"
+    ],
+    "dragonFist": [
+      "source/gogeta/frames/dragonFist/01.png",
+      "source/gogeta/frames/dragonFist/02.png",
+      "source/gogeta/frames/dragonFist/03.png",
+      "source/gogeta/frames/dragonFist/04.png",
+      "source/gogeta/frames/dragonFist/05.png",
+      "source/gogeta/frames/dragonFist/06.png",
+      "source/gogeta/frames/dragonFist/07.png",
+      "source/gogeta/frames/dragonFist/08.png",
+      "source/gogeta/frames/dragonFist/09.png",
+      "source/gogeta/frames/dragonFist/10.png",
+      "source/gogeta/frames/dragonFist/11.png",
+      "source/gogeta/frames/dragonFist/12.png",
+      "source/gogeta/frames/dragonFist/13.png",
+      "source/gogeta/frames/dragonFist/14.png",
+      "source/gogeta/frames/dragonFist/15.png",
+      "source/gogeta/frames/dragonFist/16.png",
+      "source/gogeta/frames/dragonFist/17.png",
+      "source/gogeta/frames/dragonFist/18.png",
+      "source/gogeta/frames/dragonFist/19.png",
+      "source/gogeta/frames/dragonFist/20.png"
+    ],
+    "superEnergyBackflow": [
+      "source/gogeta/frames/superEnergyBackflow/01.png",
+      "source/gogeta/frames/superEnergyBackflow/02.png",
+      "source/gogeta/frames/superEnergyBackflow/03.png",
+      "source/gogeta/frames/superEnergyBackflow/04.png",
+      "source/gogeta/frames/superEnergyBackflow/05.png",
+      "source/gogeta/frames/superEnergyBackflow/06.png",
+      "source/gogeta/frames/superEnergyBackflow/07.png",
+      "source/gogeta/frames/superEnergyBackflow/08.png",
+      "source/gogeta/frames/superEnergyBackflow/09.png",
+      "source/gogeta/frames/superEnergyBackflow/10.png",
+      "source/gogeta/frames/superEnergyBackflow/11.png",
+      "source/gogeta/frames/superEnergyBackflow/12.png"
+    ],
+    "superKamehameha": [
+      "source/gogeta/frames/superKamehameha/01.png",
+      "source/gogeta/frames/superKamehameha/02.png",
+      "source/gogeta/frames/superKamehameha/03.png",
+      "source/gogeta/frames/superKamehameha/04.png",
+      "source/gogeta/frames/superKamehameha/05.png",
+      "source/gogeta/frames/superKamehameha/06.png",
+      "source/gogeta/frames/superKamehameha/07.png",
+      "source/gogeta/frames/superKamehameha/08.png",
+      "source/gogeta/frames/superKamehameha/09.png",
+      "source/gogeta/frames/superKamehameha/10.png",
+      "source/gogeta/frames/superKamehameha/11.png",
+      "source/gogeta/frames/superKamehameha/12.png"
+    ],
+    "guard": [
+      "source/gogeta/frames/guard/01.png",
+      "source/gogeta/frames/guard/02.png",
+      "source/gogeta/frames/guard/03.png"
+    ]
+  }
+}

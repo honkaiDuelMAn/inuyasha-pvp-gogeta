@@ -18,7 +18,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_PATH || 'playwright');
       for (const c of [h,g]) {s.handle(c,{type:'character',character:'i'});s.handle(c,{type:'ready'});}
       return {code,catalog:catalog.length,zero:drawBonus(['i','ke'],0),host:h.events.find(e=>e.type==='start'),guest:g.events.find(e=>e.type==='start')};
     });
-    assert.match(actual.code,/^[A-F0-9]{6}$/);assert.equal(actual.catalog,48);assert.deepEqual(actual.zero,[]);
+    // Baseline 48 moves plus Gogeta's four normal attacks.
+    assert.match(actual.code,/^[A-F0-9]{6}$/);assert.equal(actual.catalog,52);assert.deepEqual(actual.zero,[]);
     assert.deepEqual(actual.host,actual.guest);assert.deepEqual(actual.host.bonusCards,[]);
     console.log('PASS original room rules execute in the browser, same bonus list, zero bonus RNG.');
   } finally {await browser.close();await app.close();}

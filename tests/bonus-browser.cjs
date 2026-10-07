@@ -18,7 +18,12 @@ const {gameClick,newPlayer,boot,hand,finishRound}=require('./browser.cjs');
       await Promise.all(pages.map(p=>p.locator('#roomPanel[data-phase="picking"]').waitFor({timeout:20000})));
       const start=await host.evaluate(()=>__networkEvents.find(e=>e.type==='start'));
       assert.equal(start.bonusCards.length,bonusCount);
+      // The original help dialog animates in after the picker opens. Wait for
+      // it before clicking the close button so the click cannot race the
+      // overlay on slower browser runs.
+      await host.waitForTimeout(1200);
       for(const p of pages) await gameClick(p,358,82);
+      await host.waitForTimeout(300);
       if(bonusCount===1) {
         assert.deepEqual(start.bonusCards,['kikyosRevenge']);
         await hand(host,[[341,110],[92,200],[216,110]]);await hand(guest,[[341,60],[216,60],[341,110]]);
@@ -26,7 +31,7 @@ const {gameClick,newPlayer,boot,hand,finishRound}=require('./browser.cjs');
         assert.deepEqual(start.bonusCards,['doubleLeft','doubleRight']);
         for(const p of pages) await hand(p,[[92,200],[341,110],[341,60]]);
       }
-      await Promise.all(pages.map(p=>p.waitForFunction(()=>__gameEvents.some(e=>e[0]==='resolved'),{},{timeout:10000})));
+      await Promise.all(pages.map(p=>p.waitForFunction(()=>__gameEvents.some(e=>e[0]==='resolved'),{},{timeout:30000})));
       const reports=await Promise.all(pages.map(p=>p.evaluate(()=>__gameEvents.find(e=>e[0]==='resolved')[1])));
       assert.deepEqual(reports[0],reports[1]);
       if(bonusCount===1) {

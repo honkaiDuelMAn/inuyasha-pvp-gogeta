@@ -11,7 +11,7 @@ function roomCode() {
 }
 
 const byId = new Map(catalog.map(move => [move.id, move]));
-const characters = ['i', 'ke', 'm', 'ka', 'n', 's', 'sa', 'ko'];
+const characters = ['i', 'ke', 'm', 'ka', 'n', 's', 'sa', 'ko', 'go'];
 const commonCards = ['perfectGuard', 'heal', 'kikyosRevenge', 'doubleRight', 'doubleLeft'];
 const countValid = count => Number.isInteger(count) && count >= 0 && count <= 5;
 function settings(message, previous = { bonusCount: 0, bannedCards: [], dedicatedEnabled: false }) {

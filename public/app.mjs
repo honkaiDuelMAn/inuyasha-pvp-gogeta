@@ -1,10 +1,43 @@
 const $ = id => document.getElementById(id);
 const directTransport = window.inuyashaDirect;
-const names = { i: '이누야샤', ke: '가영', m: '미륵', ka: '카구라', n: '나락', s: '셋쇼마루', sa: '산고', ko: '코우가' };
-const cardNames = { perfectGuard: '완벽방어', heal: '치유', kikyosRevenge: '금강', doubleRight: '더블 라이트', doubleLeft: '더블 레프트', summonKirara: '키라라 소환', summonDemons: '요괴 소환', summonJaken: '자켄 소환', summonShippo: '싯포 소환', summonWolves: '늑대 소환' };
-let socket, player, mode, gameReady = false, room = null, seat = null, code = null, changing = false, match = null;
+const names = { i: '이누야샤', ke: '가영', m: '미륵', ka: '카구라', n: '나락', s: '셋쇼마루', sa: '산고', ko: '코우가', go: '오지터' };
+const cardNames = { perfectGuard: '완벽방어', heal: '치유', kikyosRevenge: '금강', doubleRight: '더블 라이트', doubleLeft: '더블 레프트', summonKirara: '키라라 소환', summonDemons: '요괴 소환', summonJaken: '자켄 소환', summonShippo: '싯포 소환', summonWolves: '늑대 소환', bigBangKamehameha: '빅뱅 애네르기파', dragonFist: '용권', superEnergyBackflow: '초 에너지 역류', superKamehameha: '초 에네르기파' };
+let socket, player, mode, gameReady = false, room = null, seat = null, code = null, changing = false, match = null, pickingScreen = false, versusTimer;
 export function message(text, error = false) { $('message').textContent = text; $('message').classList.toggle('error', error); }
 function bridge(name, ...args) { return gameReady ? player.ruffle().callExternalInterface(name, ...args) : false; }
+function hideGogetaVersus() {
+  clearTimeout(versusTimer);
+  const overlay = $('gogetaVersus'); if (overlay) overlay.hidden = true;
+}
+function hideGogetaStatus() {
+  const overlay = $('gogetaStatus'); if (!overlay) return;
+  overlay.hidden = true;
+  for (const side of overlay.querySelectorAll('[data-seat]')) side.classList.remove('active');
+}
+function showGogetaStatus(event) {
+  const overlay = $('gogetaStatus'); if (!overlay) return;
+  let active = false;
+  for (const side of overlay.querySelectorAll('[data-seat]')) {
+    const isGogeta = event.characters[Number(side.dataset.seat)] === 'go';
+    side.classList.toggle('active', isGogeta);
+    active ||= isGogeta;
+  }
+  overlay.hidden = !active;
+}
+function showGogetaVersus(event) {
+  const overlay = $('gogetaVersus'); if (!overlay) return;
+  const hasGogeta = event.characters.includes('go');
+  if (!hasGogeta) { hideGogetaVersus(); return; }
+  for (const side of overlay.querySelectorAll('[data-seat]')) {
+    const playerSeat = Number(side.dataset.seat);
+    side.classList.toggle('active', event.characters[playerSeat] === 'go');
+    const label = side.querySelector('strong');
+    if (label) label.textContent = `${playerSeat + 1}P · ${names[event.characters[playerSeat]]}`;
+  }
+  overlay.hidden = false;
+  clearTimeout(versusTimer);
+  versusTimer = setTimeout(() => { overlay.hidden = true; }, 2200);
+}
 function send(event) {
   if (directTransport) { try { directTransport.send(event); } catch (error) { message(error.message, true); } return; }
   if (socket?.readyState !== WebSocket.OPEN) { message('서버 연결이 끊겼습니다. 페이지를 새로 열어 접속하세요.', true); return; }
@@ -33,13 +66,14 @@ async function loadGame(nextMode) {
 window.pvpEvent = (kind, data) => {
   if (mode !== 'pvp') return;
   if (kind === 'ready') { gameReady = true; if (seat !== null) bridge('pvpConfigure', seat); render(); return; }
+  if (kind === 'picking') { pickingScreen = true; render(); return; }
   if (!room) return;
-  if (kind === 'character') { changing = false; send({ type: 'character', character: data.character }); return; }
+  if (kind === 'character') { pickingScreen = false; changing = false; render(); send({ type: 'character', character: data.character }); return; }
   if (kind === 'fault') { send({ type: 'leave' }); message(data.message, true); return; }
   if (['moves', 'loaded', 'resolved', 'finished', 'rematch'].includes(kind)) send({ type: kind, ...data });
 };
 function clearRoom() {
-  bridge('pvpReset'); room = null; seat = null; code = null; match = null; changing = false;
+  bridge('pvpReset'); room = null; seat = null; code = null; match = null; changing = false; pickingScreen = false; hideGogetaVersus(); hideGogetaStatus();
   $('bonusList').textContent = ''; render();
 }
 export function handle(event) {
@@ -58,6 +92,7 @@ export function handle(event) {
   if (event.type === 'room') { room = event; render(); return; }
   if (event.type === 'start') {
     match = event;
+    pickingScreen = false; showGogetaStatus(event); showGogetaVersus(event);
     const dedicated = event.dedicatedCards;
     $('bonusList').textContent = (event.bonusCards.length ? `공통카드 ${event.bonusCards.length}장: ${event.bonusCards.map(id => cardNames[id]).join(' · ')}` : '공통카드 0장') + (dedicated.some(cards => cards.length) ? ` / 전용카드: ${dedicated.map((cards, i) => `${i + 1}P ${cards.map(id => cardNames[id]).join(' · ')}`).join(' / ')}` : ' / 전용카드 OFF');
     if (!bridge('pvpStart', event.match, event.characters.join(','), event.bonusCards.join(','), dedicated.map(cards => cards.join(',')).join(','))) { send({ type: 'leave' }); message('게임이 아직 준비되지 않았습니다. PLAY와 난이도를 먼저 선택하세요.', true); }
@@ -71,8 +106,8 @@ export function handle(event) {
     if (!bridge('pvpPlay', event.match, event.round, event.moves[0].join(','), event.moves[1].join(','))) { send({ type: 'leave' }); message('대전 입력을 실행하지 못했습니다.', true); }
     return;
   }
-  if (event.type === 'result') { message(event.result === 'tie' ? '무승부입니다. 양쪽이 캐릭터 다시 선택을 누르면 다음 경기를 준비합니다.' : `${event.winner + 1}P · ${names[match.characters[event.winner]]} 승리! 캐릭터를 다시 선택할 수 있습니다.`); return; }
-  if (event.type === 'reset') { changing = false; match = null; $('bonusList').textContent = ''; bridge('pvpReset'); return; }
+  if (event.type === 'result') { hideGogetaStatus(); message(event.result === 'tie' ? '무승부입니다. 양쪽이 캐릭터 다시 선택을 누르면 다음 경기를 준비합니다.' : `${event.winner + 1}P · ${names[match.characters[event.winner]]} 승리! 캐릭터를 다시 선택할 수 있습니다.`); return; }
+  if (event.type === 'reset') { changing = false; pickingScreen = false; match = null; $('bonusList').textContent = ''; hideGogetaVersus(); hideGogetaStatus(); bridge('pvpReset'); return; }
   if (event.type === 'opponentLeft') { message(event.reason); return; }
   if (event.type === 'closed') { clearRoom(); message(event.reason, true); return; }
   if (event.type === 'left') { clearRoom(); if (mode !== 'original') message('방을 나갔습니다. 다시 방을 만들거나 참가하세요.'); }
@@ -83,6 +118,8 @@ function render() {
   $('roomPanel').dataset.phase = room?.phase || '';
   $('roomPanel').dataset.round = String(room?.round || 0);
   $('roomPanel').dataset.match = String(room?.match || 0);
+  const gogetaPick = $('gogetaPick');
+  if (gogetaPick) gogetaPick.hidden = !(inRoom && mode === 'pvp' && gameReady && room.phase === 'selecting' && !room.players[seat]?.character);
   if (!inRoom) return;
   const selecting = room.phase === 'selecting';
   const settingsLocked = seat !== 0 || !selecting;
@@ -117,6 +154,10 @@ $('leave').addEventListener('click', () => send({ type: 'leave' }));
 $('original').addEventListener('click', async () => { if (room || directTransport) send({ type: 'leave' }); mode = 'original'; await loadGame('original'); message('원본 모드입니다. 원래 방식대로 플레이하세요.'); });
 $('volume').addEventListener('input', () => { if (player) player.ruffle().volume = Number($('volume').value) / 100; });
 $('fullscreen').addEventListener('click', () => { if (player) player.ruffle().requestFullscreen(); });
+if ($('gogetaPick')) $('gogetaPick').addEventListener('click', () => {
+  if (!bridge('pvpChooseGogeta')) { message('오지터 캐릭터를 준비하지 못했습니다. 게임을 새로고침해 주세요.', true); return; }
+  pickingScreen = false; render();
+});
 if (!directTransport) {
 $('copy').addEventListener('click', async () => {
   try { const url = new URL($('shareAddress').value); url.searchParams.set('room', code); await navigator.clipboard.writeText(url.toString()); message('초대 링크를 복사했습니다. 상대에게 공유하세요.'); }

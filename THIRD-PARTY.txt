@@ -28,3 +28,4 @@ MIT. 원문: node_modules/ws/LICENSE.
 소스 재빌드에는 JPEXS Free Flash Decompiler 26.3.0을 사용했습니다.
 https://github.com/jindrapetrik/jpexs-decompiler
 GPLv3+ 도구이며 배포 실행 폴더에 포함하지 않았습니다.
+Gogeta development artwork in source/gogeta is derived from the user-provided Manga RPG Goku sprite (character ID 5). It is checked in as replaceable build input; no separately downloaded internet illustration is redistributed.

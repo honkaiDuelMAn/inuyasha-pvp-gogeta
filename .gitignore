@@ -1,6 +1,11 @@
 node_modules/
 public/ruffle/
-public/game/
+public/game/*
+!public/game/characters/
+public/game/characters/*
+!public/game/characters/go_figure.swf
+!public/game/gogeta/
+!public/game/gogeta/**
 runtime/
 scratch/
 __pycache__/

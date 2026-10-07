@@ -4,7 +4,149 @@ var g = gameRoot.pvpgame;
 var b = gameRoot.pvpBridge = {seat:0, match:0, round:0, phase:"selecting", timer:0};
 var ei = flash.external.ExternalInterface;
 b.emit = function(kind, data) { flash.external.ExternalInterface.call("pvpEvent", kind, data); };
-b.configure = function(seat) { this.seat = Number(seat); return true; };
+b.arrayHas = function(values, target) {
+    for (var i=0; i<values.length; i++) { if (values[i] == target) { return true; } }
+    return false;
+};
+b.gogetaCardImages = {
+    bigBangKamehameha:true,
+    dragonFist:true,
+    superEnergyBackflow:true,
+    superKamehameha:true
+};
+b.clearGogetaCardArt = function(clip) {
+    if (clip != undefined && clip.gogetaArt_mc != undefined) {
+        clip.gogetaArt_mc.removeMovieClip();
+    }
+};
+b.decorateGogetaCard = function(view, clip, moveId) {
+    if (clip == undefined) { return; }
+    this.clearGogetaCardArt(clip);
+    if (moveId == undefined || moveId == null || moveId == "") { return; }
+    if (this.gogetaCardImages[moveId]) {
+        var art = clip.createEmptyMovieClip("gogetaArt_mc",1000);
+        art._x = 0;
+        art._y = 0;
+        art.enabled = false;
+        art.useHandCursor = false;
+        art.loadMovie("gogeta/cards/"+moveId+".png");
+        return;
+    }
+    // Existing shared cards already have native Inuyasha artwork. Reuse
+    // that bitmap frame while preserving Gogeta's move object and handler.
+    var donorLabel = view._generateMoveLabelName({moveId:moveId,characterId:"i"});
+    clip.gotoAndStop(donorLabel);
+};
+b.decorateGogetaMoveCards = function(view) {
+    if (view == undefined || view._player == undefined || view._player.characterId != "go") { return; }
+    for (var rowIndex=0; rowIndex<view._moveSelectorClips.length; rowIndex++) {
+        var moveRow = view._moveSelectorClips[rowIndex];
+        for (var column=0; column<moveRow.length; column++) {
+            var moveClip = moveRow[column];
+            this.decorateGogetaCard(view,moveClip,moveClip.moveId);
+        }
+    }
+};
+b.decorateGogetaSelectedCards = function(view) {
+    if (view == undefined || view._player == undefined || view._player.characterId != "go") { return; }
+    for (var index=0; index<view._selectedMovesClips.length; index++) {
+        var selectedMove = view._selectedMoves[index];
+        this.decorateGogetaCard(view,view._selectedMovesClips[index],selectedMove == 0 ? null : selectedMove.id);
+    }
+};
+b.addCompatible = function(moveId) {
+    var description = g.movieMediator._movesDescriptions[moveId];
+    var move = g.movieMediator._allMoves[moveId];
+    if (move == undefined || move.compatibleCharacters == undefined) { return false; }
+    if (description != undefined && description.compatibleCharacters != undefined &&
+        !this.arrayHas(description.compatibleCharacters,"go")) { description.compatibleCharacters.push("go"); }
+    if (!this.arrayHas(move.compatibleCharacters,"go")) { move.compatibleCharacters.push("go"); }
+    return true;
+};
+b.addGogetaMove = function(id, name, energy, damage, area) {
+    var description = {
+        id:id,
+        name:name,
+        target:"enemy",
+        type:"action",
+        advanced:false,
+        compatibleCharacters:["go"],
+        depthMod:1,
+        userImpact:{locDiff:[0,0],effectArea:[[0,0,0],[0,1,0],[0,0,0]],lifeDiff:0,energyDiff:energy,protection:0},
+        enemyImpact:{locDiff:[0,0],effectArea:area,lifeDiff:damage,energyDiff:0,protection:0},
+        order:0,fresh:false
+    };
+    g.movieMediator._movesDescriptions[id] = description;
+    // MoveData and CharacterData are data-only containers in the original
+    // game. FFDec's replacement compiler cannot reliably instantiate a
+    // constructor stored in a local variable at runtime, so use the exact
+    // constructed data shape instead of rebuilding all original moves.
+    g.movieMediator._allMoves[id] = description;
+};
+b.installGogeta = function() {
+    if (this.gogetaInstalled) { return true; }
+    if (g.movieMediator == undefined || g.movieMediator._allMoves == undefined ||
+        g.movieMediator._characters == undefined || g.movieMediator._movesDescriptions == undefined ||
+        g.movieMediator._charactersDescriptions == undefined) { return false; }
+    try {
+        this.addGogetaMove("bigBangKamehameha", "빅뱅 애네르기파", -50, -40, [[0,0,0],[0,1,0],[1,1,1]]);
+        this.addGogetaMove("dragonFist", "용권", -60, -70, [[0,0,0],[1,1,1],[0,0,0]]);
+        this.addGogetaMove("superEnergyBackflow", "초 에너지 역류", -25, -25, [[1,1,1],[1,1,1],[1,1,1]]);
+        this.addGogetaMove("superKamehameha", "초 에네르기파", -20, -35, [[0,0,0],[1,1,1],[0,0,0]]);
+
+        var shared = ["guard","energyUp","moveLeft","moveRight","moveUp","moveDown",
+                      "perfectGuard","heal","kikyosRevenge","doubleRight","doubleLeft","summonShippo"];
+        for (var sharedIndex=0; sharedIndex<shared.length; sharedIndex++) { this.addCompatible(shared[sharedIndex]); }
+
+        var regular = {};
+        var regularIds = ["guard","energyUp","moveLeft","moveRight","moveUp","moveDown",
+                          "bigBangKamehameha","dragonFist","superEnergyBackflow","superKamehameha"];
+        for (var moveIndex=0; moveIndex<regularIds.length; moveIndex++) {
+            regular[regularIds[moveIndex]] = g.movieMediator._allMoves[regularIds[moveIndex]];
+        }
+        g.movieMediator._charactersDescriptions.go = {name:"Gogeta",level:8,fightList:[]};
+        g.movieMediator._characters.go = {
+            name:"Gogeta",level:8,moves:regular,advancedMoves:{},id:"go",
+            maxHealth:100,maxEnergy:100,locked:false,defeated:false
+        };
+        if (g.viewRoundPlayers != undefined && g.viewRoundPlayers._characterIdToLinkageIdKey != undefined) {
+            g.viewRoundPlayers._characterIdToLinkageIdKey.go = {figure:"goMoves",fxTop:"goFxTop",fxBottom:"goFxBottom"};
+        }
+        this.gogetaInstalled = true;
+        return true;
+    } catch (error) { return false; }
+};
+b.configure = function(seat) { this.seat = Number(seat); return this.installGogeta(); };
+b.chooseGogeta = function() {
+    if (this.phase != "selecting" || !this.installGogeta()) { return false; }
+    var character = g.movieMediator._characters.go;
+    if (character == undefined) { return false; }
+    g.movieMediator.userPickedCharacter({character:character});
+    return true;
+};
+b.gogetaState = function() {
+    var moveIds = ["bigBangKamehameha","dragonFist","superEnergyBackflow","superKamehameha"];
+    var moves = {};
+    for (var moveIndex=0; moveIndex<moveIds.length; moveIndex++) {
+        var id = moveIds[moveIndex];
+        var move = g.movieMediator._allMoves[id];
+        moves[id] = {
+            energy:move.userImpact.energyDiff,
+            damage:move.enemyImpact.lifeDiff,
+            area:move.enemyImpact.effectArea
+        };
+    }
+    var regularMoves = [];
+    for (var regularId in g.movieMediator._characters.go.moves) { regularMoves.push(regularId); }
+    return {
+        installed:this.installGogeta(),phase:this.phase,
+        character:g.movieMediator._characters.go != undefined,
+        move:g.movieMediator._allMoves.bigBangKamehameha != undefined,
+        moves:moves,
+        regularMoves:regularMoves,
+        linkage:g.viewRoundPlayers._characterIdToLinkageIdKey.go
+    };
+};
 b.select = function() {
     if (this.phase != "selecting") { return false; }
     g.movieMediator._pickUserCharacter();
@@ -29,6 +171,7 @@ b.reset = function() {
     return true;
 };
 b.start = function(match, idsText, cardsText, dedicatedText) {
+    if (!this.installGogeta()) { return false; }
     var ids = idsText.split(",");
     var cards = cardsText == "" ? [] : cardsText.split(",");
     var dedicated = dedicatedText == undefined ? ["",""] : dedicatedText.split(",");
@@ -95,6 +238,12 @@ b.retry = function(match, round) {
     this.phase = "picking";
     g.gameManager.pvpOriginalRequest.call(g.gameManager);
     return true;
+};
+g.movieMediator.pvpOriginalPickUserCharacter = g.movieMediator._pickUserCharacter;
+g.movieMediator._pickUserCharacter = function() {
+    var result = this.pvpOriginalPickUserCharacter.call(this);
+    b.emit("picking",{});
+    return result;
 };
 g.movieMediator.userPickedCharacter = function(args) {
     if (b.phase != "selecting") { return; }
@@ -164,6 +313,12 @@ picker._showMoves = function() {
         clips[i]._yscale = origin.yscale*ratio;
     }
     this.pvpOriginalShowMoves.call(this);
+    b.decorateGogetaMoveCards(this);
+};
+picker.pvpOriginalShowSelectedMoves = picker._showSelectedMoves;
+picker._showSelectedMoves = function() {
+    this.pvpOriginalShowSelectedMoves.call(this);
+    b.decorateGogetaSelectedCards(this);
 };
 ei.addCallback("pvpConfigure",b,b.configure);
 ei.addCallback("pvpSelect",b,b.select);
@@ -172,4 +327,6 @@ ei.addCallback("pvpPlay",b,b.play);
 ei.addCallback("pvpNext",b,b.next);
 ei.addCallback("pvpReset",b,b.reset);
 ei.addCallback("pvpRetry",b,b.retry);
+ei.addCallback("pvpChooseGogeta",b,b.chooseGogeta);
+ei.addCallback("pvpGogetaState",b,b.gogetaState);
 b.emit("ready",{});

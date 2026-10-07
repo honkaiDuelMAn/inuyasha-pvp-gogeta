@@ -114,6 +114,7 @@ def write_manifest(source: Path, output: Path) -> None:
     output.write_text(
         json.dumps(extract_manifest(source), ensure_ascii=False, indent=2) + "\n",
         encoding="utf8",
+        newline="\n",
     )
 
 

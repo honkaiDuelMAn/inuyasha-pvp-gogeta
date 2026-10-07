@@ -10,7 +10,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 0
@@ -26,7 +27,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 15
@@ -42,7 +44,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 0
@@ -58,7 +61,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 0
@@ -74,7 +78,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 0
@@ -90,7 +95,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": false,
     "energy": 0
@@ -394,7 +400,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": true,
     "energy": -25
@@ -410,7 +417,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": true,
     "energy": -60
@@ -426,7 +434,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": true,
     "energy": -100
@@ -465,7 +474,8 @@ export const catalog = [
     "characters": [
       "i",
       "m",
-      "ke"
+      "ke",
+      "go"
     ],
     "advanced": true,
     "energy": -15
@@ -490,7 +500,8 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": true,
     "energy": 0
@@ -506,9 +517,54 @@ export const catalog = [
       "n",
       "s",
       "sa",
-      "ko"
+      "ko",
+      "go"
     ],
     "advanced": true,
     "energy": 0
+  },
+  {
+    "id": "bigBangKamehameha",
+    "name": "빅뱅 애네르기파",
+    "characters": [
+      "go"
+    ],
+    "advanced": false,
+    "energy": -50,
+    "damage": -40,
+    "area": "0,0,0_0,1,0_1,1,1"
+  },
+  {
+    "id": "dragonFist",
+    "name": "용권",
+    "characters": [
+      "go"
+    ],
+    "advanced": false,
+    "energy": -60,
+    "damage": -70,
+    "area": "0,0,0_1,1,1_0,0,0"
+  },
+  {
+    "id": "superEnergyBackflow",
+    "name": "초 에너지 역류",
+    "characters": [
+      "go"
+    ],
+    "advanced": false,
+    "energy": -25,
+    "damage": -25,
+    "area": "1,1,1_1,1,1_1,1,1"
+  },
+  {
+    "id": "superKamehameha",
+    "name": "초 에네르기파",
+    "characters": [
+      "go"
+    ],
+    "advanced": false,
+    "energy": -20,
+    "damage": -35,
+    "area": "0,0,0_1,1,1_0,0,0"
   }
 ];

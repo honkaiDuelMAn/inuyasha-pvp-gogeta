@@ -1,0 +1,71 @@
+{
+  "character": "go",
+  "displayName": "오지터",
+  "moves": [
+    {
+      "id": "bigBangKamehameha",
+      "name": "빅뱅 애네르기파",
+      "type": "action",
+      "target": "enemy",
+      "advanced": false,
+      "energy": -50,
+      "damage": -40,
+      "area": "0,0,0_0,1,0_1,1,1",
+      "depth": 1,
+      "animation": "bigBangKamehameha",
+      "jump": false
+    },
+    {
+      "id": "dragonFist",
+      "name": "용권",
+      "type": "action",
+      "target": "enemy",
+      "advanced": false,
+      "energy": -60,
+      "damage": -70,
+      "area": "0,0,0_1,1,1_0,0,0",
+      "depth": 1,
+      "animation": "dragonFist",
+      "jump": false
+    },
+    {
+      "id": "superEnergyBackflow",
+      "name": "초 에너지 역류",
+      "type": "action",
+      "target": "enemy",
+      "advanced": false,
+      "energy": -25,
+      "damage": -25,
+      "area": "1,1,1_1,1,1_1,1,1",
+      "depth": 1,
+      "animation": "superEnergyBackflow",
+      "jump": false
+    },
+    {
+      "id": "superKamehameha",
+      "name": "초 에네르기파",
+      "type": "action",
+      "target": "enemy",
+      "advanced": false,
+      "energy": -20,
+      "damage": -35,
+      "area": "0,0,0_1,1,1_0,0,0",
+      "depth": 1,
+      "animation": "superKamehameha",
+      "jump": false
+    }
+  ],
+  "dedicatedCard": "summonShippo",
+  "commonAnimations": {
+    "moveLeft": "jump",
+    "moveRight": "jump",
+    "moveUp": "jump",
+    "moveDown": "jump",
+    "doubleLeft": "jump",
+    "doubleRight": "jump",
+    "guard": "guard",
+    "perfectGuard": "guard",
+    "heal": "aura",
+    "energyUp": "aura"
+  }
+}

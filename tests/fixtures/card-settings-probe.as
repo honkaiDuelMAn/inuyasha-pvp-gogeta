@@ -13,7 +13,13 @@ probe.inspect = function() {
         for (var column=0; column<5; column++) {
             var card = view._moveSelectorClips[rowIndex][column];
             var rect = card.getBounds(_level0);
-            regular.push({id:card.moveId,x:(rect.xMin+rect.xMax)/2,y:(rect.yMin+rect.yMax)/2});
+            var localRect = card.getBounds(card);
+            regular.push({
+                id:card.moveId,x:(rect.xMin+rect.xMax)/2,y:(rect.yMin+rect.yMax)/2,
+                width:rect.xMax-rect.xMin,height:rect.yMax-rect.yMin,
+                local:[localRect.xMin,localRect.yMin,localRect.xMax,localRect.yMax],
+                frame:card._currentframe
+            });
         }
     }
     var players = [];
