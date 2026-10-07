@@ -1,6 +1,7 @@
 node_modules/
 public/ruffle/
 public/game/*
+!public/game/original-gogeta-bridge.swf
 !public/game/characters/
 public/game/characters/*
 !public/game/characters/go_figure.swf

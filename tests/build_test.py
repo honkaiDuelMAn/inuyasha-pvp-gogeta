@@ -30,24 +30,28 @@ def tags(path):
 
 
 class Preservation(unittest.TestCase):
-    def test_pvp_preserves_balanced_game_tags_with_only_one_inserted_action(self):
-        baseline = tags(ROOT / 'public/game/game-original.swf')
-        patched = tags(ROOT / 'public/game/game-pvp.swf')
-        self.assertEqual(len(patched), len(baseline) + 1)
-        frame = 1
-        filtered = []
-        inserted = 0
-        for tag in patched:
-            if len(filtered) < len(baseline) and tag == baseline[len(filtered)]:
-                filtered.append(tag)
-            else:
-                self.assertEqual(frame, 16)
-                self.assertEqual(tag[0], 12)
-                inserted += 1
-            if tag[0] == 1:
-                frame += 1
-        self.assertEqual(inserted, 1)
-        self.assertEqual(filtered, baseline)
+    def test_both_modes_preserve_the_same_balanced_tags_with_one_loader_each(self):
+        original = tags(ROOT / 'public/game/game-original.swf')
+        pvp = tags(ROOT / 'public/game/game-pvp.swf')
+
+        def without_loader(values, marker):
+            frame = 1
+            filtered = []
+            removed = []
+            for tag in values:
+                if tag[0] == 12 and marker in tag[1]:
+                    removed.append((frame, tag))
+                else:
+                    filtered.append(tag)
+                if tag[0] == 1:
+                    frame += 1
+            self.assertEqual(len(removed), 1)
+            self.assertEqual(removed[0][0], 16)
+            return filtered
+
+        balanced_original = without_loader(original, b'original-gogeta-bridge.swf')
+        balanced_pvp = without_loader(pvp, b'pvp-bridge.swf')
+        self.assertEqual(balanced_original, balanced_pvp)
 
     def test_character_files_are_unchanged(self):
         self.assertEqual(len(HASHES), 12)
@@ -61,6 +65,7 @@ class Preservation(unittest.TestCase):
         for name in ['game-original.swf', 'game-pvp.swf']:
             self.assertEqual((ROOT / 'public/game' / name).read_bytes()[3], 6)
         self.assertEqual((ROOT / 'public/game/pvp-bridge.swf').read_bytes()[3], 8)
+        self.assertEqual((ROOT / 'public/game/original-gogeta-bridge.swf').read_bytes()[3], 8)
 
 
 if __name__ == '__main__':

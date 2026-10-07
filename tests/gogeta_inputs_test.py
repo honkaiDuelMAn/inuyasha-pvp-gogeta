@@ -2,6 +2,8 @@ import hashlib
 import json
 import os
 import unittest
+
+from tools.original_gogeta import MARKER, serialize, split, unpack
 from pathlib import Path
 
 
@@ -14,6 +16,13 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def normalized_main_sha256(path: Path) -> str:
+    data = unpack(path.read_bytes())
+    header, tags = split(data)
+    tags = [tag for tag in tags if not (tag[0] == 12 and MARKER in tag[1])]
+    return hashlib.sha256(serialize(header, tags, compressed=True)).hexdigest()
+
+
 class GogetaInputHashes(unittest.TestCase):
     def test_declared_inputs_match_real_files(self) -> None:
         self.assertTrue(MANIFEST.is_file(), f"missing {MANIFEST}")
@@ -21,7 +30,7 @@ class GogetaInputHashes(unittest.TestCase):
         self.assertEqual(data["mangaRpg"]["sha256"], sha256(MANGA_SOURCE))
         self.assertEqual(
             data["inuYasha"]["mainSwfSha256"],
-            sha256(ROOT / "public" / "game" / "game-original.swf"),
+            normalized_main_sha256(ROOT / "public" / "game" / "game-original.swf"),
         )
 
     def test_original_figure_hashes_remain_the_verified_baseline(self) -> None:
