@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 const directTransport = window.inuyashaDirect;
 const names = { i: '이누야샤', ke: '가영', m: '미륵', ka: '카구라', n: '나락', s: '셋쇼마루', sa: '산고', ko: '코우가', go: '오지터' };
 const cardNames = { perfectGuard: '완벽방어', heal: '치유', kikyosRevenge: '금강', doubleRight: '더블 라이트', doubleLeft: '더블 레프트', summonKirara: '키라라 소환', summonDemons: '요괴 소환', summonJaken: '자켄 소환', summonShippo: '싯포 소환', summonWolves: '늑대 소환', bigBangKamehameha: '빅뱅 애네르기파', dragonFist: '용권', superEnergyBackflow: '초 에너지 역류', superKamehameha: '초 에네르기파' };
-let socket, player, mode, gameReady = false, room = null, seat = null, code = null, changing = false, match = null, pickingScreen = false, versusTimer;
+let socket, player, mode, gameReady = false, room = null, seat = null, code = null, changing = false, match = null, pickingScreen = false, originalPicking = false, versusTimer;
 export function message(text, error = false) { $('message').textContent = text; $('message').classList.toggle('error', error); }
 function bridge(name, ...args) { return gameReady ? player.ruffle().callExternalInterface(name, ...args) : false; }
 function hideGogetaVersus() {
@@ -24,7 +24,7 @@ function showGogetaStatus(event) {
   }
   overlay.hidden = !active;
 }
-function showGogetaVersus(event) {
+function showGogetaVersus(event, autoHide = true) {
   const overlay = $('gogetaVersus'); if (!overlay) return;
   const hasGogeta = event.characters.includes('go');
   if (!hasGogeta) { hideGogetaVersus(); return; }
@@ -36,7 +36,7 @@ function showGogetaVersus(event) {
   }
   overlay.hidden = false;
   clearTimeout(versusTimer);
-  versusTimer = setTimeout(() => { overlay.hidden = true; }, 2200);
+  if (autoHide) versusTimer = setTimeout(() => { overlay.hidden = true; }, 2200);
 }
 function send(event) {
   if (directTransport) { try { directTransport.send(event); } catch (error) { message(error.message, true); } return; }
@@ -51,7 +51,8 @@ async function connect() {
   await new Promise((resolve, reject) => { ws.addEventListener('open', resolve, { once: true }); ws.addEventListener('error', () => reject(Error('서버에 연결하지 못했습니다.')), { once: true }); });
 }
 async function loadGame(nextMode) {
-  gameReady = false; mode = nextMode;
+  gameReady = false; originalPicking = false; mode = nextMode;
+  hideGogetaVersus(); hideGogetaStatus();
   player?.remove(); $('placeholder')?.remove();
   const instance = player = window.RufflePlayer.newest().createPlayer(); $('gameContainer').append(instance);
   // Focusing the game after editing settings must not scroll beneath the click.
@@ -59,7 +60,8 @@ async function loadGame(nextMode) {
     const container = event.composedPath().find(node => node instanceof HTMLElement && node.id === 'container');
     container?.focus({ preventScroll: true });
   }, true);
-  await instance.ruffle().load({ url: new URL(`./game/game-${nextMode === 'pvp' ? 'pvp' : 'original'}.swf`, location.href).href, base: new URL('./game/', location.href).href, parameters: nextMode === 'pvp' ? { pvp: 'true' } : {}, allowScriptAccess: nextMode === 'pvp', autoplay: 'on', unmuteOverlay: 'hidden', splashScreen: false, logLevel: 'error' });
+  const parameters = nextMode === 'pvp' ? { pvp: 'true' } : { originalGogeta: 'true' };
+  await instance.ruffle().load({ url: new URL(`./game/game-${nextMode === 'pvp' ? 'pvp' : 'original'}.swf`, location.href).href, base: new URL('./game/', location.href).href, parameters, allowScriptAccess: true, autoplay: 'on', unmuteOverlay: 'hidden', splashScreen: false, logLevel: 'error' });
   instance.ruffle().volume = Number($('volume').value) / 100;
   render();
 }
@@ -71,6 +73,16 @@ window.pvpEvent = (kind, data) => {
   if (kind === 'character') { pickingScreen = false; changing = false; render(); send({ type: 'character', character: data.character }); return; }
   if (kind === 'fault') { send({ type: 'leave' }); message(data.message, true); return; }
   if (['moves', 'loaded', 'resolved', 'finished', 'rematch'].includes(kind)) send({ type: kind, ...data });
+};
+window.originalGogetaEvent = (kind, data = {}) => {
+  if (mode !== 'original') return;
+  if (kind === 'ready') { gameReady = true; originalPicking = true; render(); message('원본 게임입니다. 기존 캐릭터 또는 왼쪽 아래 오지터를 선택하세요.'); return; }
+  if (kind === 'picking') { originalPicking = true; hideGogetaVersus(); hideGogetaStatus(); render(); return; }
+  if (kind === 'selected') { originalPicking = false; render(); return; }
+  if (kind === 'versus') { originalPicking = false; showGogetaVersus(data, false); render(); return; }
+  if (kind === 'battle') { hideGogetaVersus(); showGogetaStatus(data); render(); return; }
+  if (kind === 'result') { hideGogetaVersus(); hideGogetaStatus(); return; }
+  if (kind === 'fault') { originalPicking = false; render(); message(data.message || '오지터 원본 모드를 준비하지 못했습니다.', true); }
 };
 function clearRoom() {
   bridge('pvpReset'); room = null; seat = null; code = null; match = null; changing = false; pickingScreen = false; hideGogetaVersus(); hideGogetaStatus();
@@ -119,7 +131,9 @@ function render() {
   $('roomPanel').dataset.round = String(room?.round || 0);
   $('roomPanel').dataset.match = String(room?.match || 0);
   const gogetaPick = $('gogetaPick');
-  if (gogetaPick) gogetaPick.hidden = !(inRoom && mode === 'pvp' && gameReady && room.phase === 'selecting' && !room.players[seat]?.character);
+  const pvpCanPickGogeta = inRoom && mode === 'pvp' && gameReady && room.phase === 'selecting' && !room.players[seat]?.character;
+  const originalCanPickGogeta = mode === 'original' && gameReady && originalPicking;
+  if (gogetaPick) gogetaPick.hidden = !(pvpCanPickGogeta || originalCanPickGogeta);
   if (!inRoom) return;
   const selecting = room.phase === 'selecting';
   const settingsLocked = seat !== 0 || !selecting;
@@ -151,12 +165,18 @@ $('ready').addEventListener('click', () => send({ type: 'ready' }));
 $('change').addEventListener('click', () => send({type:'selectCharacter'}));
 $('rematch').addEventListener('click', () => send({ type: 'rematch' }));
 $('leave').addEventListener('click', () => send({ type: 'leave' }));
-$('original').addEventListener('click', async () => { if (room || directTransport) send({ type: 'leave' }); mode = 'original'; await loadGame('original'); message('원본 모드입니다. 원래 방식대로 플레이하세요.'); });
+$('original').addEventListener('click', async () => { if (room || directTransport) send({ type: 'leave' }); mode = 'original'; await loadGame('original'); message('원본 게임을 불러왔습니다. PLAY → NORMAL 또는 HARD로 진행하세요.'); });
 $('volume').addEventListener('input', () => { if (player) player.ruffle().volume = Number($('volume').value) / 100; });
 $('fullscreen').addEventListener('click', () => { if (player) player.ruffle().requestFullscreen(); });
 if ($('gogetaPick')) $('gogetaPick').addEventListener('click', () => {
-  if (!bridge('pvpChooseGogeta')) { message('오지터 캐릭터를 준비하지 못했습니다. 게임을 새로고침해 주세요.', true); return; }
-  pickingScreen = false; render();
+  if (mode === 'original') {
+    if (!bridge('originalChooseGogeta')) { message('오지터 원본 캐릭터를 준비하지 못했습니다. 게임을 새로고침해 주세요.', true); return; }
+    originalPicking = false; render(); return;
+  }
+  if (mode === 'pvp') {
+    if (!bridge('pvpChooseGogeta')) { message('오지터 캐릭터를 준비하지 못했습니다. 게임을 새로고침해 주세요.', true); return; }
+    pickingScreen = false; render();
+  }
 });
 if (!directTransport) {
 $('copy').addEventListener('click', async () => {
